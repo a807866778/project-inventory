@@ -1,7 +1,11 @@
 "use server";
 
+<<<<<<< HEAD
 import { db, schema } from "@/lib/db";
 import { eq } from "drizzle-orm";
+=======
+import { db, schema, eq } from "@/lib/db";
+>>>>>>> 4a2ceed9022514aef389900d5c5e43d17abce0da
 import { getCurrentUser } from "@/lib/auth";
 import { v4 as uuidv4 } from "uuid";
 import { hashPassword } from "@/lib/auth";

@@ -5,7 +5,11 @@ import * as schema from "./schema";
 
 export { schema, eq, desc, and, gte, lt, like, or, isNull };
 
+<<<<<<< HEAD
 // 创建 Turso/本地 client
+=======
+// Create Turso client
+>>>>>>> 4a2ceed9022514aef389900d5c5e43d17abce0da
 function createTursoClient() {
   const url = process.env.DATABASE_URL;
   const authToken = process.env.DATABASE_AUTH_TOKEN;
@@ -16,6 +20,7 @@ function createTursoClient() {
   return createClient({ url, authToken });
 }
 
+<<<<<<< HEAD
 // 创建 D1 client (Cloudflare Workers 运行时)
 function createD1Client() {
   // @ts-ignore - D1 全局变量在 Workers 环境中可用
@@ -24,10 +29,13 @@ function createD1Client() {
   return d1Database;
 }
 
+=======
+>>>>>>> 4a2ceed9022514aef389900d5c5e43d17abce0da
 let _db: ReturnType<typeof drizzle> | null = null;
 
 export function getDb() {
   if (!_db) {
+<<<<<<< HEAD
     // 尝试 D1 (Cloudflare Workers)
     const d1 = createD1Client();
     if (d1) {
@@ -36,6 +44,8 @@ export function getDb() {
     }
 
     // 尝试 Turso
+=======
+>>>>>>> 4a2ceed9022514aef389900d5c5e43d17abce0da
     const client = createTursoClient();
     if (client) {
       _db = drizzle(client, { schema });
@@ -44,7 +54,11 @@ export function getDb() {
   return _db;
 }
 
+<<<<<<< HEAD
 // Mock db for build time
+=======
+// Mock db for build time (no DATABASE_URL)
+>>>>>>> 4a2ceed9022514aef389900d5c5e43d17abce0da
 const mockDb = {
   select: () => ({ from: () => ({ where: () => ({ get: () => null, all: () => [] }) }) }),
   insert: () => ({ values: () => Promise.resolve({}) }),
@@ -61,9 +75,17 @@ export const db: ReturnType<typeof drizzle> = new Proxy({} as any, {
       return (mockDb as any)[prop];
     }
     const value = (database as any)[prop];
+<<<<<<< HEAD
     if (typeof value === "function") {
       return value.bind(database);
     }
     return value;
   },
+=======
+    if (typeof value === 'function') {
+      return value.bind(database);
+    }
+    return value;
+  }
+>>>>>>> 4a2ceed9022514aef389900d5c5e43d17abce0da
 });

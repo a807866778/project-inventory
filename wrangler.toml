@@ -6,7 +6,7 @@ pages_build_output_dir = ".open-next/worker"
 [[d1_databases]]
 binding = "DB"
 database_name = "project-inventory"
-database_id = "YOUR_D1_DATABASE_ID"  # 需要在 Cloudflare Dashboard 创建后替换
+database_id = "46c27205-1e03-44b4-bd40-2ea64bd769e3"
 
 [vars]
 NEXT_PUBLIC_APP_URL = "https://project-inventory.pages.dev"

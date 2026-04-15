@@ -10,7 +10,10 @@ node_modules/
 .env
 .env.local
 .env.*.local
+<<<<<<< HEAD
 .dev.vars
+=======
+>>>>>>> 4a2ceed9022514aef389900d5c5e43d17abce0da
 
 # IDE
 .idea/
@@ -29,6 +32,9 @@ npm-debug.log*
 # Misc
 .cache/
 .vercel/
+<<<<<<< HEAD
 
 # Wrangler
 .wrangler/
+=======
+>>>>>>> 4a2ceed9022514aef389900d5c5e43d17abce0da

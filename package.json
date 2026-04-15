@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "build:opennext": "SKIP_NEXT_APP_BUILD=1 opennextjs-cloudflare build",
+    "deploy": "npm run build && npm run build:opennext",
+    "start": "opennextjs-cloudflare start",
     "lint": "next lint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -19,25 +21,27 @@
     "date-fns": "^3.6.0",
     "drizzle-orm": "^0.31.2",
     "jose": "^5.6.3",
-    "next": "14.2.3",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "next": "15.2.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.19.1",
     "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^20.14.2",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.19",
     "drizzle-kit": "^0.22.8",
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.3",
+    "eslint-config-next": "15.2.3",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "tsx": "^4.15.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "wrangler": "^3.0.0"
   }
 }

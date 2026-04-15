@@ -1,16 +1,15 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
+import { eq, desc, and, gte, lt } from "drizzle-orm";
 import * as schema from "./schema";
 
-export { schema };
+export { schema, eq, desc, and, gte, lt };
 
-// Lazy initialization
-let _db = null;
+let _db: ReturnType<typeof drizzle> | null = null;
 
 function createDb() {
   const url = process.env.DATABASE_URL;
   if (!url) {
-    console.warn("DATABASE_URL not set, database operations will be skipped");
     return null;
   }
   const client = createClient({ 
@@ -27,10 +26,24 @@ export function getDb() {
   return _db;
 }
 
-// Default export - returns null if no database connection
-export const db = {
-  select: (...args) => getDb()?.select(...args) ?? Promise.resolve([]),
-  insert: (...args) => getDb()?.insert(...args) ?? Promise.resolve({}),
-  update: (...args) => getDb()?.update(...args) ?? Promise.resolve({}),
-  delete: (...args) => getDb()?.delete(...args) ?? Promise.resolve({}),
-};
+// Export a db-like proxy that works with all drizzle methods
+export const db: ReturnType<typeof drizzle> = new Proxy({} as any, {
+  get(_, prop) {
+    const database = getDb();
+    if (!database) {
+      // Return empty/mock functions when no DB
+      if (prop === 'select') return () => Promise.resolve([]);
+      if (prop === 'insert') return () => Promise.resolve({});
+      if (prop === 'update') return () => Promise.resolve({});
+      if (prop === 'delete') return () => Promise.resolve({});
+      if (prop === 'query') return { materials: { findFirst: () => Promise.resolve(null), findMany: () => Promise.resolve([]) } };
+      if (prop === '$count') return () => Promise.resolve(0);
+      return () => Promise.resolve([]);
+    }
+    const value = (database as any)[prop];
+    if (typeof value === 'function') {
+      return value.bind(database);
+    }
+    return value;
+  }
+});

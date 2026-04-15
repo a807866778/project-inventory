@@ -20,13 +20,9 @@ export default async function OutboundPage() {
   // 获取关联信息
   const recordsWithDetails = await Promise.all(
     records.map(async (record) => {
-      const project = await db.query.projects.findFirst({
-        where: eq(schema.projects.id, record.projectId),
-      });
+      const project = await db.select().from(schema.projects).where(eq(schema.projects.id,  record.projectId)).get();
 
-      const operator = await db.query.users.findFirst({
-        where: eq(schema.users.id, record.operatorId),
-      });
+      const operator = await db.select().from(schema.users).where(eq(schema.users.id,  record.operatorId)).get();
 
       const items = await db
         .select()

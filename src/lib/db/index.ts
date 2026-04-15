@@ -5,18 +5,13 @@ import * as schema from "./schema";
 
 export { schema, eq, desc, and, gte, lt, like, or, isNull };
 
-// Create D1 client for Cloudflare Pages
+let _db: ReturnType<typeof drizzle> | null = null;
+
 function createD1Client() {
-  // Cloudflare D1 binding - DB is the binding name in wrangler.toml
   const url = process.env.DATABASE_URL || process.env.CF_DATABASE_URL;
-  if (!url) {
-    console.warn("DATABASE_URL not set, database operations will return empty results");
-    return null;
-  }
+  if (!url) return null;
   return createClient({ url });
 }
-
-let _db: ReturnType<typeof drizzle> | null = null;
 
 export function getDb() {
   if (!_db) {
@@ -30,15 +25,15 @@ export function getDb() {
 
 // Mock db for build time (no DATABASE_URL)
 const mockDb = {
-  select: () => ({ from: () => ({ where: () => ({ get: () => null, all: () => [] }) }),
+  select: () => ({ from: () => ({ where: () => ({ get: () => null, all: () => [] }) }) }),
   insert: () => ({ values: () => Promise.resolve({}) }),
   update: () => ({ set: () => ({ where: () => Promise.resolve({}) }) }),
   delete: () => ({ where: () => Promise.resolve({}) }),
-  query: { materials: { findFirst: () => Promise.resolve(null), findMany: () => Promise.resolve([]) }, projects: { findFirst: () => Promise.resolve(null) }, categories: { findFirst: () => Promise.resolve(null) } },
+  query: { materials: { findFirst: () => null, findMany: () => [] }, projects: { findFirst: () => null }, categories: { findFirst: () => null }, suppliers: { findFirst: () => null }, users: { findFirst: () => null }, roles: { findFirst: () => null }, inboundRecords: { findFirst: () => null }, outboundRecords: { findFirst: () => null }, inboundItems: { findFirst: () => null }, outboundItems: { findFirst: () => null } },
   $count: () => Promise.resolve(0),
 };
 
-export const db = new Proxy({} as any, {
+export const db: ReturnType<typeof drizzle> = new Proxy({} as any, {
   get(_, prop) {
     const database = getDb();
     if (!database) {

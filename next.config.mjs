@@ -6,7 +6,6 @@ const nextConfig = {
     "bcryptjs",
     "jose",
     "uuid",
-    "date-fns",
   ],
   images: {
     unoptimized: true,

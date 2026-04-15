@@ -22,14 +22,10 @@ export default async function InboundPage() {
   const recordsWithDetails = await Promise.all(
     records.map(async (record) => {
       const supplier = record.supplierId
-        ? await db.query.suppliers.findFirst({
-            where: eq(schema.suppliers.id, record.supplierId),
-          })
+        ? await db.select().from(schema.suppliers).where(eq(schema.suppliers.id,  record.supplierId)).get()
         : null;
 
-      const operator = await db.query.users.findFirst({
-        where: eq(schema.users.id, record.operatorId),
-      });
+      const operator = await db.select().from(schema.users).where(eq(schema.users.id,  record.operatorId)).get();
 
       const items = await db
         .select()

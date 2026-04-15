@@ -4,6 +4,6 @@
 build_command: npm run build:cf
 build_output_dir: .open-next/worker
 
-# 指定 Node.js 版本（Cloudflare Pages 默认使用 18，需要 20+）
-environment_variables:
-  NODE_VERSION: "20"
+# 指定构建时的 Node.js 版本
+pages_build_environment:
+  node_version: "20"

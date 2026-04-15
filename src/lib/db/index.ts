@@ -5,41 +5,44 @@ import * as schema from "./schema";
 
 export { schema, eq, desc, and, gte, lt, like, or, isNull };
 
-// Create D1 client lazily - only at runtime, not during build
-let _db: ReturnType<typeof drizzle> | null = null;
-
-function createDb() {
-  const url = process.env.DATABASE_URL;
+// Create D1 client for Cloudflare Pages
+function createD1Client() {
+  // Cloudflare D1 binding - DB is the binding name in wrangler.toml
+  const url = process.env.DATABASE_URL || process.env.CF_DATABASE_URL;
   if (!url) {
+    console.warn("DATABASE_URL not set, database operations will return empty results");
     return null;
   }
-  const client = createClient({ 
-    url,
-    authToken: process.env.DATABASE_AUTH_TOKEN 
-  });
-  return drizzle(client, { schema });
+  return createClient({ url });
 }
 
-function getDbInstance() {
+let _db: ReturnType<typeof drizzle> | null = null;
+
+export function getDb() {
   if (!_db) {
-    _db = createDb();
+    const client = createD1Client();
+    if (client) {
+      _db = drizzle(client, { schema });
+    }
   }
   return _db;
 }
 
-// Export a db-like proxy that works with all drizzle methods
-export const db: ReturnType<typeof drizzle> = new Proxy({} as any, {
+// Mock db for build time (no DATABASE_URL)
+const mockDb = {
+  select: () => ({ from: () => ({ where: () => ({ get: () => null, all: () => [] }) }),
+  insert: () => ({ values: () => Promise.resolve({}) }),
+  update: () => ({ set: () => ({ where: () => Promise.resolve({}) }) }),
+  delete: () => ({ where: () => Promise.resolve({}) }),
+  query: { materials: { findFirst: () => Promise.resolve(null), findMany: () => Promise.resolve([]) }, projects: { findFirst: () => Promise.resolve(null) }, categories: { findFirst: () => Promise.resolve(null) } },
+  $count: () => Promise.resolve(0),
+};
+
+export const db = new Proxy({} as any, {
   get(_, prop) {
-    const database = getDbInstance();
+    const database = getDb();
     if (!database) {
-      // Return empty/mock functions when no DB (build time)
-      if (prop === 'select') return () => Promise.resolve([]);
-      if (prop === 'insert') return () => Promise.resolve({});
-      if (prop === 'update') return () => Promise.resolve({});
-      if (prop === 'delete') return () => Promise.resolve({});
-      if (prop === 'query') return { materials: { findFirst: () => Promise.resolve(null), findMany: () => Promise.resolve([]) } };
-      if (prop === '$count') return () => Promise.resolve(0);
-      return () => Promise.resolve([]);
+      return (mockDb as any)[prop];
     }
     const value = (database as any)[prop];
     if (typeof value === 'function') {

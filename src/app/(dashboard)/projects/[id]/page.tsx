@@ -14,9 +14,7 @@ export default async function ProjectDetailPage({
   const { id } = await params;
   const user = await getCurrentUser();
 
-  const project = await db.query.projects.findFirst({
-    where: eq(schema.projects.id, id),
-  });
+  const project = await db.select().from(schema.projects).where(eq(schema.projects.id,  id)).get();
 
   if (!project) {
     notFound();
@@ -64,9 +62,7 @@ export default async function ProjectDetailPage({
 
   for (const { items } of allItems) {
     for (const item of items) {
-      const material = await db.query.materials.findFirst({
-        where: eq(schema.materials.id, item.materialId),
-      });
+      const material = await db.select().from(schema.materials).where(eq(schema.materials.id,  item.materialId)).get();
 
       if (material) {
         if (!materialSummary[item.materialId]) {

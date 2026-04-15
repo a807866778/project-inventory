@@ -5,17 +5,22 @@ import * as schema from "./schema";
 
 export { schema, eq, desc, and, gte, lt, like, or, isNull };
 
-let _db: ReturnType<typeof drizzle> | null = null;
-
-function createD1Client() {
-  const url = process.env.DATABASE_URL || process.env.CF_DATABASE_URL;
-  if (!url) return null;
-  return createClient({ url });
+// Create Turso client
+function createTursoClient() {
+  const url = process.env.DATABASE_URL;
+  const authToken = process.env.DATABASE_AUTH_TOKEN;
+  if (!url) {
+    console.warn("DATABASE_URL not set");
+    return null;
+  }
+  return createClient({ url, authToken });
 }
+
+let _db: ReturnType<typeof drizzle> | null = null;
 
 export function getDb() {
   if (!_db) {
-    const client = createD1Client();
+    const client = createTursoClient();
     if (client) {
       _db = drizzle(client, { schema });
     }

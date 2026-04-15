@@ -1,5 +1,6 @@
 name = "project-inventory"
 compatibility_date = "2024-06-01"
+compatibility_flags = ["nodejs_compat"]
 
 # Cloudflare Pages 构建输出目录
 pages_build_output_dir = ".open-next/worker"

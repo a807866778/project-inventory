@@ -1,13 +1,7 @@
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { db, schema } from "@/lib/db";
-import { eq, and, gt } from "drizzle-orm";
+import { db, schema, eq, and, gt } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "project-inventory-secret-key-change-in-production"
-);
 
 const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7天
 
@@ -44,28 +38,34 @@ export async function createSession(userId: string): Promise<string> {
 
 export async function getSession(sessionId: string): Promise<SessionUser | null> {
   try {
-    const session = await db.query.sessions.findFirst({
-      where: and(
-        eq(schema.sessions.id, sessionId),
-        gt(schema.sessions.expiresAt, new Date())
-      ),
-    });
+    const session = await db
+      .select()
+      .from(schema.sessions)
+      .where(and(eq(schema.sessions.id, sessionId), gt(schema.sessions.expiresAt, new Date())))
+      .get();
 
     if (!session) return null;
 
-    // 获取用户信息
-    const user = await db.select().from(schema.users).where(eq(schema.users.id,  session.userId)).get();
+    const user = await db
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.id, session.userId))
+      .get();
 
     if (!user) return null;
 
-    // 获取用户角色和权限
-    const userRoleRecords = await db.query.userRoles.findMany({
-      where: eq(schema.userRoles.userId, user.id),
-    });
+    const userRoleRecords = await db
+      .select()
+      .from(schema.userRoles)
+      .where(eq(schema.userRoles.userId, user.id));
 
     const permissions: string[] = [];
     for (const ur of userRoleRecords) {
-      const role = await db.select().from(schema.roles).where(eq(schema.roles.id,  ur.roleId)).get();
+      const role = await db
+        .select()
+        .from(schema.roles)
+        .where(eq(schema.roles.id, ur.roleId))
+        .get();
       if (role) {
         const rolePerms = JSON.parse(role.permissions) as string[];
         permissions.push(...rolePerms);
@@ -76,7 +76,7 @@ export async function getSession(sessionId: string): Promise<SessionUser | null>
       id: user.id,
       username: user.username,
       realName: user.realName,
-      permissions: Array.from(new Set(permissions)), // 去重
+      permissions: Array.from(new Set(permissions)),
     };
   } catch {
     return null;
@@ -98,9 +98,11 @@ export async function login(
   username: string,
   password: string
 ): Promise<{ success: boolean; error?: string }> {
-  const user = await db.query.users.findFirst({
-    where: eq(schema.users.username, username),
-  });
+  const user = await db
+    .select()
+    .from(schema.users)
+    .where(eq(schema.users.username, username))
+    .get();
 
   if (!user) {
     return { success: false, error: "用户名或密码错误" };

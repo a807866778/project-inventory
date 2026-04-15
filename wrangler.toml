@@ -7,7 +7,6 @@ pages_build_output_dir = ".open-next/worker"
 # 静态资源
 [assets]
 directory = ".open-next/assets"
-binding = "ASSETS"
 
 # D1 数据库
 [[d1_databases]]

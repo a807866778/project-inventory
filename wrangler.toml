@@ -9,7 +9,3 @@ database_id = "46c27205-1e03-44b4-bd40-2ea64bd769e3"
 
 [vars]
 NEXT_PUBLIC_APP_URL = "https://project-inventory.pages.dev"
-
-[builds]
-command = "npm run build"
-directory = ".next"

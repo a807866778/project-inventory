@@ -1,7 +1,6 @@
-
 import { getCurrentUser } from "@/lib/auth";
-import { db, schema } from "@/lib/db";
-import { eq, desc, and, gte, lt } from "drizzle-orm";
+import { db, schema, eq } from "@/lib/db";
+import { desc, gte } from "drizzle-orm";
 import Link from "next/link";
 import { format } from "date-fns";
 
@@ -17,12 +16,12 @@ export default async function DashboardPage() {
 
   // 低库存预警
   const lowStockMaterials = allMaterials.filter(
-    (m: { stockQuantity: number; minStockWarning: number; }) => m.stockQuantity <= m.minStockWarning && m.minStockWarning > 0
+    (m) => m.stockQuantity <= m.minStockWarning && m.minStockWarning > 0
   );
 
   // 进行中项目数
   const allProjects = await db.select().from(schema.projects);
-  const activeProjects = allProjects.filter((p: { status: string }) => p.status === "进行中").length;
+  const activeProjects = allProjects.filter((p) => p.status === "进行中").length;
 
   // 今日出库记录
   const todayOutbounds = await db
@@ -47,9 +46,7 @@ export default async function DashboardPage() {
       .where(eq(schema.outboundItems.outboundId, record.id));
 
     for (const item of items) {
-      const material = await db.query.materials.findFirst({
-        where: eq(schema.materials.id, item.materialId),
-      });
+      const material = await db.select().from(schema.materials).where(eq(schema.materials.id, item.materialId)).get();
       if (material) {
         todayRevenue += item.quantity * material.salePrice;
         todayCost += item.quantity * material.purchasePrice;
@@ -72,10 +69,8 @@ export default async function DashboardPage() {
 
   // 获取项目名称
   const recentOutboundsWithProject = await Promise.all(
-    recentOutbounds.map(async (record: { id: string }) => {
-      const project = await db.query.projects.findFirst({
-        where: eq(schema.projects.id, record.projectId),
-      });
+    recentOutbounds.map(async (record) => {
+      const project = await db.select().from(schema.projects).where(eq(schema.projects.id, record.projectId)).get();
       return {
         ...record,
         projectName: project?.name || "未知项目",
@@ -87,9 +82,7 @@ export default async function DashboardPage() {
   const lowStockWithDetails = await Promise.all(
     lowStockMaterials.slice(0, 5).map(async (material) => {
       const category = material.categoryId
-        ? await db.query.categories.findFirst({
-            where: eq(schema.categories.id, material.categoryId),
-          })
+        ? await db.select().from(schema.categories).where(eq(schema.categories.id, material.categoryId)).get()
         : null;
       return {
         ...material,
@@ -181,7 +174,7 @@ export default async function DashboardPage() {
               <div className="mt-4 pt-4 border-t border-gray-100">
                 <div className="text-sm text-gray-500 mb-2">最近出库</div>
                 <div className="space-y-2">
-                  {recentOutboundsWithProject.map((record: { id: string }) => (
+                  {recentOutboundsWithProject.map((record) => (
                     <Link
                       key={record.id}
                       href={`/outbound`}

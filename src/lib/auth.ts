@@ -54,9 +54,7 @@ export async function getSession(sessionId: string): Promise<SessionUser | null>
     if (!session) return null;
 
     // 获取用户信息
-    const user = await db.query.users.findFirst({
-      where: eq(schema.users.id, session.userId),
-    });
+    const user = await db.select().from(schema.users).where(eq(schema.users.id,  session.userId)).get();
 
     if (!user) return null;
 
@@ -67,9 +65,7 @@ export async function getSession(sessionId: string): Promise<SessionUser | null>
 
     const permissions: string[] = [];
     for (const ur of userRoleRecords) {
-      const role = await db.query.roles.findFirst({
-        where: eq(schema.roles.id, ur.roleId),
-      });
+      const role = await db.select().from(schema.roles).where(eq(schema.roles.id,  ur.roleId)).get();
       if (role) {
         const rolePerms = JSON.parse(role.permissions) as string[];
         permissions.push(...rolePerms);

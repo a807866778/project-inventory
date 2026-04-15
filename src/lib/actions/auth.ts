@@ -3,7 +3,9 @@
 import { db, schema } from "@/lib/db";
 import { eq } from "@/lib/db/queries";
 import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000; // 7天
 
@@ -44,7 +46,14 @@ export async function login(username: string, password: string) {
 }
 
 export async function logout() {
-  await authLogout();
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get("session_id")?.value;
+  
+  if (sessionId) {
+    await db.delete(schema.sessions).where(eq(schema.sessions.id, sessionId));
+    cookieStore.delete("session_id");
+  }
+  
   revalidatePath("/");
   redirect("/login");
 }

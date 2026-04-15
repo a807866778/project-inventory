@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getCurrentUser } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import { eq, desc, gte, lt, and } from "drizzle-orm";

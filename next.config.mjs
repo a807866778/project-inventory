@@ -5,6 +5,8 @@ const nextConfig = {
       bodySizeLimit: "5mb",
     },
   },
+  // Skip build-time page generation for pages that use database
+  pagesDir: false,
 };
 
 export default nextConfig;

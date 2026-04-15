@@ -11,7 +11,19 @@ const config: OpenNextConfig = {
       queue: "dummy",
     },
   },
-  edgeExternals: ["node:crypto"],
+  edgeExternals: [
+    "node:async_hooks",
+    "node:buffer",
+    "node:crypto",
+    "node:fs",
+    "node:http",
+    "node:https",
+    "node:path",
+    "node:stream",
+    "node:url",
+    "node:util",
+    "node:vm",
+  ],
   middleware: {
     external: true,
     override: {

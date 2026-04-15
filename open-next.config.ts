@@ -23,6 +23,9 @@ const config: OpenNextConfig = {
     "node:url",
     "node:util",
     "node:vm",
+    "bcryptjs",
+    "drizzle-orm",
+    "@libsql/client",
   ],
   middleware: {
     external: true,

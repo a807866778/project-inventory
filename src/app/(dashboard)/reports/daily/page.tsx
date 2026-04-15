@@ -37,9 +37,7 @@ export default async function DailyReportPage() {
       .where(eq(schema.outboundItems.outboundId, record.id));
 
     for (const item of items) {
-      const material = await db.query.materials.findFirst({
-        where: eq(schema.materials.id, item.materialId),
-      });
+      const material = await db.select().from(schema.materials).where(eq(schema.materials.id,  item.materialId)).get();
       if (material) {
         todayRevenue += item.quantity * material.salePrice;
         todayCost += item.quantity * material.purchasePrice;
@@ -73,9 +71,7 @@ export default async function DailyReportPage() {
       .where(eq(schema.outboundItems.outboundId, record.id));
 
     for (const item of items) {
-      const material = await db.query.materials.findFirst({
-        where: eq(schema.materials.id, item.materialId),
-      });
+      const material = await db.select().from(schema.materials).where(eq(schema.materials.id,  item.materialId)).get();
       if (material) {
         weekRevenue += item.quantity * material.salePrice;
         weekCost += item.quantity * material.purchasePrice;
@@ -105,9 +101,7 @@ export default async function DailyReportPage() {
       .where(eq(schema.outboundItems.outboundId, record.id));
 
     for (const item of items) {
-      const material = await db.query.materials.findFirst({
-        where: eq(schema.materials.id, item.materialId),
-      });
+      const material = await db.select().from(schema.materials).where(eq(schema.materials.id,  item.materialId)).get();
       if (material) {
         monthRevenue += item.quantity * material.salePrice;
         monthCost += item.quantity * material.purchasePrice;

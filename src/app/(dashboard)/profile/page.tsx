@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getCurrentUser } from "@/lib/auth";
 
 export default async function ProfilePage() {

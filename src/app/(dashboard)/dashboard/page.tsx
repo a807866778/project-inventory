@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic';
 
 import { getCurrentUser } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
@@ -23,7 +22,7 @@ export default async function DashboardPage() {
 
   // 进行中项目数
   const allProjects = await db.select().from(schema.projects);
-  const activeProjects = allProjects.filter((p) => p.status === "进行中").length;
+  const activeProjects = allProjects.filter((p: { status: string }) => p.status === "进行中").length;
 
   // 今日出库记录
   const todayOutbounds = await db
@@ -73,7 +72,7 @@ export default async function DashboardPage() {
 
   // 获取项目名称
   const recentOutboundsWithProject = await Promise.all(
-    recentOutbounds.map(async (record) => {
+    recentOutbounds.map(async (record: { id: string }) => {
       const project = await db.query.projects.findFirst({
         where: eq(schema.projects.id, record.projectId),
       });
@@ -182,7 +181,7 @@ export default async function DashboardPage() {
               <div className="mt-4 pt-4 border-t border-gray-100">
                 <div className="text-sm text-gray-500 mb-2">最近出库</div>
                 <div className="space-y-2">
-                  {recentOutboundsWithProject.map((record) => (
+                  {recentOutboundsWithProject.map((record: { id: string }) => (
                     <Link
                       key={record.id}
                       href={`/outbound`}

@@ -1,0 +1,12 @@
+name = "project-inventory"
+compatibility_date = "2024-06-01"
+pages_build_output_dir = ".open-next/worker"
+
+# D1 数据库
+[[d1_databases]]
+binding = "DB"
+database_name = "project-inventory"
+database_id = "YOUR_D1_DATABASE_ID"  # 需要在 Cloudflare Dashboard 创建后替换
+
+[vars]
+NEXT_PUBLIC_APP_URL = "https://project-inventory.pages.dev"

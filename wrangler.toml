@@ -1,6 +1,8 @@
 name = "project-inventory"
 compatibility_date = "2024-06-01"
-main = ".open-next/worker.js"
+
+# Cloudflare Pages 构建输出目录
+pages_build_output_dir = ".open-next/worker"
 
 # 静态资源
 [assets]

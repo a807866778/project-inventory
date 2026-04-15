@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "asdf install nodejs 20.19.2 && asdf local nodejs 20.19.2 && opennextjs-cloudflare build",
+    "build:cf": "asdf install nodejs 20.19.2 && asdf local nodejs 20.19.2 && opennextjs-cloudflare build && mkdir -p .open-next/worker && cp .open-next/worker.js .open-next/worker/_worker.js",
     "start": "next start",
     "start:cf": "opennextjs-cloudflare dev",
     "deploy:cf": "npm run build:cf && wrangler deploy",

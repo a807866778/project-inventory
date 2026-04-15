@@ -4,6 +4,10 @@
 import { useState } from "react";
 import { login } from "@/lib/actions/auth";
 
+function setCookie(name: string, value: string, maxAge: number) {
+  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+}
+
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +20,9 @@ export default function LoginPage() {
     setLoading(true);
 
     const result = await login(username, password);
-    if (result.success) {
+    if (result.success && result.sessionId) {
+      // 客户端设置 cookie
+      setCookie("session_id", result.sessionId, result.maxAge || 604800);
       window.location.href = "/dashboard";
     } else {
       setError(result.error || "登录失败");

@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// Simple auth check - only verify session cookie exists
+// Full auth is done in each page/server component
 export function middleware(request: NextRequest) {
-  // 登录页和静态资源不做拦截
   const pathname = request.nextUrl.pathname;
+  
+  // Public paths that don't need auth
   if (
     pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
@@ -13,7 +16,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 其他页面需要 session
+  // Check for session cookie
   const sessionId = request.cookies.get("session_id")?.value;
   if (!sessionId) {
     return NextResponse.redirect(new URL("/login", request.url));

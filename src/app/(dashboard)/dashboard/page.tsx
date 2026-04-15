@@ -18,7 +18,7 @@ export default async function DashboardPage() {
 
   // 低库存预警
   const lowStockMaterials = allMaterials.filter(
-    (m) => m.stockQuantity <= m.minStockWarning && m.minStockWarning > 0
+    (m: { stockQuantity: number; minStockWarning: number; }) => m.stockQuantity <= m.minStockWarning && m.minStockWarning > 0
   );
 
   // 进行中项目数

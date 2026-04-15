@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
-import { db, schema, eq, and, gt } from "@/lib/db";
+import { db, schema } from "@/lib/db";
+import { eq, and, gt } from "@/lib/db/queries";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { db, schema } from "@/lib/db";
+import { db, schema, eq } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { v4 as uuidv4 } from "uuid";
 import { hashPassword } from "@/lib/auth";
@@ -28,9 +28,7 @@ export async function createUser(
   }
 
   // 检查用户名是否已存在
-  const existing = await db.query.users.findFirst({
-    where: (u, { eq }) => eq(u.username, username),
-  });
+  const existing = await db.select().from(schema.users).where(eq(schema.users.username, username))).get();
 
   if (existing) {
     return { error: "用户名已存在" };

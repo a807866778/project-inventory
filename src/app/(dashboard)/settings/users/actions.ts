@@ -28,7 +28,7 @@ export async function createUser(
   }
 
   // 检查用户名是否已存在
-  const existing = await db.select().from(schema.users).where(eq(schema.users.username, username))).get();
+  const existing = await db.select().from(schema.users).where(eq(schema.users.username, username)).get();
 
   if (existing) {
     return { error: "用户名已存在" };

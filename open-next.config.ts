@@ -10,6 +10,13 @@ const config: OpenNextConfig = {
       tagCache: "dummy",
       queue: "dummy",
     },
+    external: [
+      "@libsql/client",
+      "@libsql/core",
+      "@libsql/hrana-client",
+      "@libsql/isomorphic-fetch",
+      "@libsql/isomorphic-ws",
+    ],
   },
   edgeExternals: ["node:crypto"],
   middleware: {

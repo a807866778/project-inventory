@@ -2,16 +2,35 @@ import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 
-// Re-export schema tables for convenient imports
 export { schema };
 
-// Create D1 client for Cloudflare
-function createD1Client() {
-  return createClient({
-    url: process.env.DATABASE_URL || "file:./data/project-inventory.db",
-    authToken: process.env.DATABASE_AUTH_TOKEN,
+// Lazy initialization
+let _db = null;
+
+function createDb() {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    console.warn("DATABASE_URL not set, database operations will be skipped");
+    return null;
+  }
+  const client = createClient({ 
+    url,
+    authToken: process.env.DATABASE_AUTH_TOKEN 
   });
+  return drizzle(client, { schema });
 }
 
-const client = createD1Client();
-export const db = drizzle(client, { schema });
+export function getDb() {
+  if (!_db) {
+    _db = createDb();
+  }
+  return _db;
+}
+
+// Default export - returns null if no database connection
+export const db = {
+  select: (...args) => getDb()?.select(...args) ?? Promise.resolve([]),
+  insert: (...args) => getDb()?.insert(...args) ?? Promise.resolve({}),
+  update: (...args) => getDb()?.update(...args) ?? Promise.resolve({}),
+  delete: (...args) => getDb()?.delete(...args) ?? Promise.resolve({}),
+};
